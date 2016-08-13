@@ -1,0 +1,14 @@
+version: 1.0#{build}
+image: Visual Studio 2015
+build_script:
+- ps: .\build.ps1
+artifacts:
+- path: OpenMC2-libs-vs140.zip
+  name: OpenMC2-libs-vs140.zip
+deploy:
+- provider: GitHub
+  auth_token:
+    secure: cq8ZIAEaUXspagwOEFf81K6+vIjvhsX2d4u5/7egRGwSvlPyrkrv42FY+hRlF9sX
+  artifact: OpenMC2-libs-vs140.zip
+  on:
+    appveyor_repo_tag: true
