@@ -1,6 +1,6 @@
 #git submodule update --init --recursive
 
-# boost is setup as a sub-set using the following command:
+# boost is setup as a subset using the following command:
 # $ bcp algorithm conversion dll filesystem lexical_cast predef preprocessor program_options property_tree range timer tokenizer tuple variant scope_exit core utility build ../Dependencies/libraries/boost
 pushd .\libraries\boost\
   .\bootstrap.bat
