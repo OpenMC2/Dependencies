@@ -562,7 +562,6 @@ static void make1c( state const * const pState )
              * affected Boost Build tests be updated.
              */
             assert( 0 < globs.jobs );
-            assert( globs.jobs <= MAXJOBS );
             while ( cmdsrunning >= globs.jobs )
                 exec_wait();
         }
@@ -689,7 +688,7 @@ static void call_timing_rule( TARGET * target, timing_info const * const time )
 
     if ( !list_empty( timing_rule ) )
     {
-        /* rule timing-rule ( args * : target : start end user system ) */
+        /* rule timing-rule ( args * : target : start end user system clock ) */
 
         /* Prepare the argument list. */
         FRAME frame[ 1 ];
@@ -703,12 +702,14 @@ static void call_timing_rule( TARGET * target, timing_info const * const time )
         /* target :: the name of the target */
         lol_add( frame->args, list_new( object_copy( target->name ) ) );
 
-        /* start end user system :: info about the action command */
-        lol_add( frame->args, list_push_back( list_push_back( list_push_back( list_new(
+        /* start end user system clock :: info about the action command */
+        lol_add( frame->args, list_push_back( list_push_back( list_push_back( list_push_back( list_new(
             outf_time( &time->start ) ),
             outf_time( &time->end ) ),
             outf_double( time->user ) ),
-            outf_double( time->system ) ) );
+            outf_double( time->system ) ),
+            outf_double( timestamp_delta_seconds(&time->start, &time->end) ) )
+            );
 
         /* Call the rule. */
         evaluate_rule( bindrule( rulename , root_module() ), rulename, frame );
@@ -773,7 +774,16 @@ static void call_action_rule
 
         /* output ? :: the output of the action command */
         if ( command_output )
-            lol_add( frame->args, list_new( object_new( command_output ) ) );
+        {
+            OBJECT * command_output_obj = object_new( command_output );
+            char * output_i = (char*)object_str(command_output_obj);
+            /* Clean the output of control characters. */
+            for (; *output_i; ++output_i)
+            {
+                if (iscntrl(*output_i) && !isspace(*output_i)) *output_i = '?';
+            }
+            lol_add( frame->args, list_new( command_output_obj ) );
+        }
         else
             lol_add( frame->args, L0 );
 
@@ -854,7 +864,9 @@ static void make1c_closure
     {
         call_timing_rule( t, time );
         if ( DEBUG_EXECCMD )
-            out_printf( "%f sec system; %f sec user\n", time->system, time->user );
+            out_printf( "%f sec system; %f sec user; %f sec clock\n",
+                time->system, time->user,
+                timestamp_delta_seconds(&time->start, &time->end) );
 
         /* Assume -p0 is in effect, i.e. cmd_stdout contains merged output. */
         call_action_rule( t, status_orig, time, cmd->buf->value, cmd_stdout );
