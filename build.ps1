@@ -5,7 +5,7 @@
 pushd .\libraries\boost\
   .\bootstrap.bat
   #.\b2 headers
-  .\b2 install --prefix=..\..\ -j2 --layout=tagged address-model=32 toolset=msvc-14.0 variant=debug,release link=static threading=multi runtime-link=static
+  .\b2 install --prefix=..\..\ -j2 --layout=tagged address-model=32 toolset=msvc-15.0 variant=debug,release link=static threading=multi runtime-link=static
 popd
 
-7z a -tzip -mtc=off -mx=9 OpenMC2-libs-vs140.zip include lib
+7z a -tzip -mtc=off -mx=9 OpenMC2-libs-vs150.zip include lib
