@@ -1,7 +1,10 @@
 version: 1.0#{build}
 image: Visual Studio 2017
 build_script:
-- ps: .\build.ps1
+- cmd: >-
+    "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
+
+    build
 artifacts:
 - path: OpenMC2-libs-vs150.zip
   name: OpenMC2-libs-vs150.zip
