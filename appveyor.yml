@@ -1,0 +1,17 @@
+version: 1.0#{build}
+image: Visual Studio 2017
+build_script:
+- cmd: >-
+    "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" x86
+
+    .\build.bat
+artifacts:
+- path: OpenMC2-libs-v141.zip
+  name: OpenMC2-libs-v141.zip
+deploy:
+- provider: GitHub
+  auth_token:
+    secure: US2B1AJBegrxUhjKUfbocWUqavl636DxnaUnl8a7/waGexpd5Dp/mN6JBZIS+6Ee
+  artifact: OpenMC2-libs-v141.zip
+  on:
+    appveyor_repo_tag: true
